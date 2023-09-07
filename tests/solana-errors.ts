@@ -4,7 +4,6 @@ import { SolanaErrors } from "../target/types/solana_errors";
 import { Keypair, PublicKey, LAMPORTS_PER_SOL, SystemProgram, sendAndConfirmTransaction } from '@solana/web3.js';
 
 describe("solana-errors", () => {
-  // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
   let connection = anchor.getProvider().connection;
 
@@ -12,9 +11,14 @@ describe("solana-errors", () => {
   const user = Keypair.generate();
   const data = Keypair.generate();
 
-  before("prepare", async () => {
-    await airdrop(anchor.getProvider().connection, user.publicKey)
-  })
+
+  // 1. Error message is not clear: Error: failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1
+  // 2. You can try to use sendAndConfirmTransaction -> then the error is clear: Error: failed to send transaction: Transaction simulation failed: Attempt to debit an account but found no record of a prior credit.
+  // 3. Airdrop some lamports - do not forget to await the function call!
+
+  // before("prepare", async () => {
+  //   await airdrop(anchor.getProvider().connection, user.publicKey)
+  // })
 
   it("Is initialized!", async () => {
 
@@ -26,7 +30,7 @@ describe("solana-errors", () => {
         data: data.publicKey,
         systemProgram: SystemProgram.programId
       })
-      .signers([user])
+      .signers([user, data])
       // .transaction()
       .rpc();
 
