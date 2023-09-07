@@ -4,17 +4,12 @@ import { SolanaErrors } from "../target/types/solana_errors";
 import { Keypair, PublicKey, LAMPORTS_PER_SOL, SystemProgram, sendAndConfirmTransaction } from '@solana/web3.js';
 
 describe("solana-errors", () => {
-  // Configure the client to use the local cluster.
   anchor.setProvider(anchor.AnchorProvider.env());
   let connection = anchor.getProvider().connection;
 
   const program = anchor.workspace.SolanaErrors as Program<SolanaErrors>;
   const user = Keypair.generate();
   const data = Keypair.generate();
-
-  before("prepare", async () => {
-    await airdrop(anchor.getProvider().connection, user.publicKey)
-  })
 
   it("Is initialized!", async () => {
 
@@ -26,11 +21,8 @@ describe("solana-errors", () => {
         data: data.publicKey,
         systemProgram: SystemProgram.programId
       })
-      .signers([user])
-      // .transaction()
+      .signers([user, data])
       .rpc();
-
-    // await sendAndConfirmTransaction(connection, tx, [user, data], { commitment: "confirmed" });
 
     console.log("Your transaction signature", tx);
   });
