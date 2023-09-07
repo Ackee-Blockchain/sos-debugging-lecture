@@ -27,10 +27,8 @@ pub struct Initialize<'info> {
     user: Signer<'info>,
 
     #[account(init,
-        space = 8 + 32 + 1,  // TODO: what if we calculate the space incorrectly?
+        space = 8 + 32 + 1,
         payer = user,
-        // seeds = [b"data"],
-        // bump
     )]
     data: Account<'info, MyData>,
 
