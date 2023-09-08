@@ -10,6 +10,7 @@ describe("solana-errors", () => {
   const program = anchor.workspace.SolanaErrors as Program<SolanaErrors>;
   const user = Keypair.generate();
   const data = Keypair.generate();
+  // const [data] = PublicKey.findProgramAddressSync([Buffer.from("data")], program.programId)
   const data2 = Keypair.generate();
 
   before("prepare", async () => {
@@ -18,6 +19,10 @@ describe("solana-errors", () => {
 
   it("Is initialized!", async () => {
 
+    // now we have changed our DataAccount to be a PDA, so we will have two errors:
+    // 1. unknown signer - the data account signature is not needed anymore
+    // 2. ConstraintSeeds - we need to pass the correct PDA based on seeds
+
     const tx = await program.methods
       .initialize()
       .accounts({
@@ -25,21 +30,10 @@ describe("solana-errors", () => {
         data: data.publicKey,
         systemProgram: SystemProgram.programId
       })
-      .signers([user, data])
+      .signers([user])
       .rpc();
 
     console.log("Your transaction signature", tx);
-    console.log("data account pubkey: ", data.publicKey.toString())
-
-    let t = await program.methods
-      .initialize()
-      .accounts({
-        user: user.publicKey,
-        data: data2.publicKey,
-        systemProgram: SystemProgram.programId
-      })
-      .signers([user, data2])
-      .rpc();
 
   });
 });
