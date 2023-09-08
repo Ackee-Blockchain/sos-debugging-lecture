@@ -1,4 +1,5 @@
 #![allow(clippy::result_large_err)]
+use anchor_lang::error_code;
 use anchor_lang::prelude::*;
 
 declare_id!("Gp3jcr7dqCcgp3QbQdcwjS5p5n5usRLoxesQuNaHm4GD");
@@ -7,11 +8,12 @@ declare_id!("Gp3jcr7dqCcgp3QbQdcwjS5p5n5usRLoxesQuNaHm4GD");
 pub mod solana_errors {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    pub fn initialize(ctx: Context<Initialize>, count: u8) -> Result<()> {
         let data = &mut ctx.accounts.data;
 
         data.authority = ctx.accounts.user.key();
-        data.counter = 0;
+
+        data.counter = 10 - count;
 
         msg!("data.conter = {}", data.counter);
         msg!("data pubkey = {}", data.key().to_string());
@@ -41,4 +43,10 @@ pub struct Initialize<'info> {
 pub struct MyData {
     authority: Pubkey,
     counter: u8,
+}
+
+#[error_code]
+pub enum MyError {
+    #[msg("invalid value of counter instruction data")]
+    InvalidCounter,
 }
