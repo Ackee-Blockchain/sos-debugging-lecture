@@ -27,7 +27,7 @@ pub struct Initialize<'info> {
     user: Signer<'info>,
 
     #[account(init,
-        space = 8 + 32 + 1,  // TODO: what if we calculate the space incorrectly?
+        space = 32 + 1,  // TODO: the space is incorrect as the DISCRIMINANT's 8 bytes are missing
         payer = user,
         // seeds = [b"data"],
         // bump

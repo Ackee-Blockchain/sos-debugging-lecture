@@ -10,6 +10,7 @@ describe("solana-errors", () => {
   const program = anchor.workspace.SolanaErrors as Program<SolanaErrors>;
   const user = Keypair.generate();
   const data = Keypair.generate();
+  const data2 = Keypair.generate();
 
   before("prepare", async () => {
     await airdrop(anchor.getProvider().connection, user.publicKey)
@@ -30,20 +31,15 @@ describe("solana-errors", () => {
     console.log("Your transaction signature", tx);
     console.log("data account pubkey: ", data.publicKey.toString())
 
-    // it is not possible to initialize again because the data account is already in use
-    // to debug, you can skipPreflight and check anchor logs
-    // then you have to use new data account
-
     let t = await program.methods
       .initialize()
       .accounts({
         user: user.publicKey,
-        data: data.publicKey,
+        data: data2.publicKey,
         systemProgram: SystemProgram.programId
       })
-      .signers([user, data])
+      .signers([user, data2])
       .rpc();
-    // .rpc({ skipPreflight: true });
 
   });
 });
