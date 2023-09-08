@@ -17,7 +17,6 @@ describe("solana-errors", () => {
 
   it("Is initialized!", async () => {
 
-    console.log("user balance = " + await connection.getBalance(user.publicKey))
     const tx = await program.methods
       .initialize()
       .accounts({
@@ -29,6 +28,7 @@ describe("solana-errors", () => {
       .rpc();
 
     console.log("Your transaction signature", tx);
+    console.log("data account pubkey: ", data.publicKey.toString())
 
     let t = await program.methods
       .initialize()
@@ -38,9 +38,8 @@ describe("solana-errors", () => {
         systemProgram: SystemProgram.programId
       })
       .signers([user, data])
-      .rpc({ skipPreflight: true });
+      .rpc();
 
-    // await sendAndConfirmTransaction(connection, t.transaction(), [user, data], { skipPreflight: true });
   });
 });
 
