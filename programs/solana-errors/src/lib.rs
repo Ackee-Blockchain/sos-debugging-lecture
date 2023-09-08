@@ -27,10 +27,10 @@ pub struct Initialize<'info> {
     user: Signer<'info>,
 
     #[account(init,
-        space = 32 + 1,  // TODO: the space is incorrect as the DISCRIMINANT's 8 bytes are missing
+        space = 8 + 32 + 1,
         payer = user,
-        // seeds = [b"data"],
-        // bump
+        seeds = [b"data"],
+        bump
     )]
     data: Account<'info, MyData>,
 

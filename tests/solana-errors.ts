@@ -25,21 +25,10 @@ describe("solana-errors", () => {
         data: data.publicKey,
         systemProgram: SystemProgram.programId
       })
-      .signers([user, data])
+      .signers([user])
       .rpc();
 
     console.log("Your transaction signature", tx);
-    console.log("data account pubkey: ", data.publicKey.toString())
-
-    let t = await program.methods
-      .initialize()
-      .accounts({
-        user: user.publicKey,
-        data: data2.publicKey,
-        systemProgram: SystemProgram.programId
-      })
-      .signers([user, data2])
-      .rpc();
 
   });
 });
