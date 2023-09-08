@@ -17,7 +17,6 @@ describe("solana-errors", () => {
 
   it("Is initialized!", async () => {
 
-    console.log("user balance = " + await connection.getBalance(user.publicKey))
     const tx = await program.methods
       .initialize()
       .accounts({
@@ -29,6 +28,11 @@ describe("solana-errors", () => {
       .rpc();
 
     console.log("Your transaction signature", tx);
+    console.log("data account pubkey: ", data.publicKey.toString())
+
+    // it is not possible to initialize again because the data account is already in use
+    // to debug, you can skipPreflight and check anchor logs
+    // then you have to use new data account
 
     let t = await program.methods
       .initialize()
@@ -38,9 +42,9 @@ describe("solana-errors", () => {
         systemProgram: SystemProgram.programId
       })
       .signers([user, data])
-      .rpc({ skipPreflight: true });
+      .rpc();
+    // .rpc({ skipPreflight: true });
 
-    // await sendAndConfirmTransaction(connection, t.transaction(), [user, data], { skipPreflight: true });
   });
 });
 
