@@ -9,8 +9,7 @@ describe("solana-errors", () => {
 
   const program = anchor.workspace.SolanaErrors as Program<SolanaErrors>;
   const user = Keypair.generate();
-  const data = Keypair.generate();
-  // const [data] = PublicKey.findProgramAddressSync([Buffer.from("data")], program.programId)
+  const [data] = PublicKey.findProgramAddressSync([Buffer.from("data")], program.programId)
   const data2 = Keypair.generate();
 
   before("prepare", async () => {
@@ -19,19 +18,20 @@ describe("solana-errors", () => {
 
   it("Is initialized!", async () => {
 
-    // now we have changed our DataAccount to be a PDA, so we will have two errors:
-    // 1. unknown signer - the data account signature is not needed anymore
-    // 2. ConstraintSeeds - we need to pass the correct PDA based on seeds
+    // Now we have new input parameter and added bad code causing subtraction overflow for count > 10
+    // so we get the "Program failed to complete" error
+    // it is possible to see the error in logs is you skip preflight checks - we fix it by addding a require! macro that checks the input or using checked arithmetics
+    // if the error is not obvious, than it is possible to use msg! logging macro to write variables in the log
 
     const tx = await program.methods
-      .initialize()
+      .initialize(11)
       .accounts({
         user: user.publicKey,
-        data: data.publicKey,
+        data: data,
         systemProgram: SystemProgram.programId
       })
       .signers([user])
-      .rpc();
+      .rpc({ skipPreflight: true });
 
     console.log("Your transaction signature", tx);
 
