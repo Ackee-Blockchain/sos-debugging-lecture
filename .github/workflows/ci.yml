@@ -1,0 +1,29 @@
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [master]
+
+name: Verify My Project
+
+env:
+  SOLANA_CLI_VERSION: 1.16.6
+  ANCHOR_VERSION: 0.28.0
+
+jobs:
+  test-my-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-solana/
+      - uses: ./.github/actions/setup-anchor/
+      - name: Cargo build
+        run: cargo build
+      - name: Cargo fmt
+        run: cargo fmt -- --check
+      - name: Cargo clippy
+        run: cargo clippy -- -D warnings
+      - name: Cargo test - unit tests
+        run: cargo test
+      - name: Anchor test - integration tests
+        run: anchor test
