@@ -12,14 +12,9 @@ pub mod solana_errors {
         let data = &mut ctx.accounts.data;
 
         data.authority = ctx.accounts.user.key();
-        // require!(count <= 10, MyError::InvalidCounter);
+        require!(count <= 10, MyError::InvalidCounter);
 
-        data.counter = 10 - count;
-
-        // data.counter = match 10u8.checked_sub(count) {
-        //     Some(c) => c,
-        //     _ => return Err(MyError::InvalidCounter.into()),
-        // };
+        data.counter = math_function(count).unwrap(); // never panics due to the require macro above
 
         msg!("data.conter = {}", data.counter);
         msg!("data pubkey = {}", data.key().to_string());
@@ -55,4 +50,21 @@ pub struct MyData {
 pub enum MyError {
     #[msg("invalid value of counter instruction data")]
     InvalidCounter,
+}
+
+fn math_function(count: u8) -> Option<u8> {
+    10u8.checked_sub(count)
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    // It is possible to test even private functions
+    #[test]
+    fn test_math_function() {
+        assert_eq!(math_function(2), Some(8));
+        assert_eq!(math_function(11), None);
+    }
 }

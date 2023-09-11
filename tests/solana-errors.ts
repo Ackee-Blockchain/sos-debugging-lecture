@@ -18,13 +18,8 @@ describe("solana-errors", () => {
 
   it("Is initialized!", async () => {
 
-    // Now we have new input parameter and added bad code causing subtraction overflow for count > 10
-    // so we get the "Program failed to complete" error
-    // it is possible to see the error in logs is you skip preflight checks - we fix it by addding a require! macro that checks the input or using checked arithmetics
-    // if the error is not obvious, than it is possible to use msg! logging macro to write variables in the log
-
     const tx = await program.methods
-      .initialize(11)
+      .initialize(10)
       .accounts({
         user: user.publicKey,
         data: data,
