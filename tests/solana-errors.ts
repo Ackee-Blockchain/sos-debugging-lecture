@@ -2,6 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { SolanaErrors } from "../target/types/solana_errors";
 import { Keypair, PublicKey, LAMPORTS_PER_SOL, SystemProgram, sendAndConfirmTransaction } from '@solana/web3.js';
+import { assert } from "chai";
 
 describe("solana-errors", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
@@ -16,6 +17,29 @@ describe("solana-errors", () => {
     await airdrop(anchor.getProvider().connection, user.publicKey)
   })
 
+  it("Cannot initialized with incorrect data account!", async () => {
+
+    const bad_data = Keypair.generate();
+
+    try {
+      await program.methods
+        .initialize(10)
+        .accounts({
+          user: user.publicKey,
+          data: bad_data.publicKey,
+          systemProgram: SystemProgram.programId
+        })
+        .signers([user])
+        .rpc();
+      assert.fail(); // always fail if the instruction did not fail as expected!
+    }
+    catch (_err) {
+      const err = anchor.AnchorError.parse(_err.logs);
+      assert.strictEqual(err.error.errorCode.code, "ConstraintSeeds");
+    }
+
+  });
+
   it("Is initialized!", async () => {
 
     const tx = await program.methods
@@ -28,7 +52,10 @@ describe("solana-errors", () => {
       .signers([user])
       .rpc({ skipPreflight: true });
 
-    console.log("Your transaction signature", tx);
+    // verify the on-chain data
+    let dataAccount = await program.account.myData.fetch(data);
+    assert.deepEqual(dataAccount.authority, user.publicKey);
+    assert.strictEqual(dataAccount.counter, 0);
 
   });
 });
